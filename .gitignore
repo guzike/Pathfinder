@@ -1,0 +1,15 @@
+*.iml
+.gradle
+/gradle
+gradlew
+gradlew.bat
+/local.properties
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+/app/src/debug/res/values/google_maps_api.xml
