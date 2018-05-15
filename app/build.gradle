@@ -1,7 +1,5 @@
 apply plugin: 'com.android.application'
 
-def GOOGLE_MAP_API_KEY = '"' + GoogleMapApiKey + '"' ?: '"Need to configure GOOGLE_MAP_API_KEY"'
-
 android {
     compileSdkVersion 27
     defaultConfig {
@@ -11,10 +9,6 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
-        manifestPlaceholders = [
-                GOOGLE_MAP_API_KEY : GOOGLE_MAP_API_KEY
-        ]
     }
     buildTypes {
         release {
