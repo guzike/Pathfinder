@@ -1,5 +1,6 @@
 package com.android.example.pathfinder.db;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
@@ -13,7 +14,7 @@ import java.util.List;
 public interface TrackDao {
 
     @Query("SELECT * FROM track")
-    List<TrackEntry> loadAllTracks();
+    LiveData<List<TrackEntry>> loadAllTracks();
 
     @Insert
     void insertTrack(TrackEntry trackEntry);
