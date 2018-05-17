@@ -82,9 +82,9 @@ public class TrackService extends Service {
                 for (Location location : locationResult.getLocations()) {
                     Log.d(TAG, location.toString());
                     pointsList.add(new LatLng(location.getLatitude(), location.getLongitude()));
-                    mEncodedTrack = PolyUtil.encode(pointsList);
-                    updateTrack();
                 }
+                mEncodedTrack = PolyUtil.encode(pointsList);
+                updateTrack();
             }
         };
     }
