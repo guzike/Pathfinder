@@ -12,7 +12,7 @@ public abstract class AppDatabase extends RoomDatabase {
 
     private static AppDatabase sInstance;
 
-    public abstract TrackDao taskDao();
+    public abstract TrackDao trackDao();
 
     public abstract CoordinateDao coordinateDao();
 

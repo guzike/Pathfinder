@@ -13,23 +13,34 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
+import com.android.example.pathfinder.db.AppDatabase;
+import com.android.example.pathfinder.db.TrackEntry;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.PolyUtil;
+
+import java.util.Date;
+import java.util.List;
 
 public class TrackService extends Service {
     private static final String TAG = TrackService.class.getSimpleName();
     private static final int ONGOING_NOTIFICATION_ID = 111;
-
-    private boolean isStarted = false;
-
     private static final int LOCATION_INTERVAL = 1000;
-    private static final float LOCATION_DISTANCE = 1f;
+    private static final float LOCATION_DISTANCE = 0f; // TODO: set it to 1 when the app is done
+    private static final String TRACK_DEFAULT_NAME = "Track name";
+
+    private String mTrackId = null;
+    private String mEncodedTrack = "";
+
+    private boolean mIsStarted = false;
 
     private LocationCallback mLocationCallback;
     private FusedLocationProviderClient mFusedLocationClient;
+    private AppDatabase mDb;
 
     @Nullable
     @Override
@@ -41,6 +52,9 @@ public class TrackService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.d(TAG, "onCreate");
+
+        mDb = AppDatabase.getInstance(this);
+        mTrackId = String.valueOf(System.currentTimeMillis());
 
         Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent =
@@ -64,8 +78,12 @@ public class TrackService extends Service {
                 if (locationResult == null) {
                     return;
                 }
+                List<LatLng> pointsList = PolyUtil.decode(mEncodedTrack);
                 for (Location location : locationResult.getLocations()) {
                     Log.d(TAG, location.toString());
+                    pointsList.add(new LatLng(location.getLatitude(), location.getLongitude()));
+                    mEncodedTrack = PolyUtil.encode(pointsList);
+                    updateTrack();
                 }
             }
         };
@@ -74,11 +92,13 @@ public class TrackService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand");
-        if (isStarted) {
+        if (mIsStarted) {
             stopService();
+        } else {
+            mIsStarted = true;
+            insertTrack();
+            startLocationUpdates();
         }
-        isStarted = true;
-        startLocationUpdates();
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -87,6 +107,16 @@ public class TrackService extends Service {
         super.onDestroy();
         Log.d(TAG, "onDestroy");
         mFusedLocationClient.removeLocationUpdates(mLocationCallback);
+    }
+
+    private void insertTrack() {
+        AppExecutors.getInstance().diskIO().execute(() ->
+                mDb.trackDao().insertTrack(new TrackEntry(TRACK_DEFAULT_NAME, mTrackId, mEncodedTrack, new Date(), new Date())));
+    }
+
+    private void updateTrack() {
+        AppExecutors.getInstance().diskIO().execute(() ->
+                mDb.trackDao().updateTrack(mTrackId, mEncodedTrack, new Date()));
     }
 
     private LocationRequest createLocationRequest() {

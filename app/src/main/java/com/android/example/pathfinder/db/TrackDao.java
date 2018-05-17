@@ -8,6 +8,7 @@ import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
+import java.util.Date;
 import java.util.List;
 
 @Dao
@@ -15,6 +16,9 @@ public interface TrackDao {
 
     @Query("SELECT * FROM track")
     LiveData<List<TrackEntry>> loadAllTracks();
+
+    @Query("UPDATE track SET track = :track, endDate = :endDate WHERE trackId = :trackId")
+    void updateTrack(String trackId, String track, Date endDate);
 
     @Insert
     void insertTrack(TrackEntry trackEntry);

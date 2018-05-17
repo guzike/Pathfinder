@@ -5,22 +5,17 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.os.Build;
 
-import com.android.example.pathfinder.db.AppDatabase;
+import com.facebook.stetho.Stetho;
 
 public class App extends Application {
 
     public static final String CHANNEL_ID = "CHANNEL_ID";
-    private static AppDatabase mDb;
-
-    public static AppDatabase getDb(){
-        return mDb;
-    }
 
     @Override
     public void onCreate() {
         super.onCreate();
+        Stetho.initializeWithDefaults(this);
         createNotificationChannel();
-        mDb = AppDatabase.getInstance(this);
     }
 
     private void createNotificationChannel() {
