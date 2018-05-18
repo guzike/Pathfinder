@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -32,6 +33,7 @@ public class TrackService extends Service {
     private static final int LOCATION_INTERVAL = 1000;
     private static final float LOCATION_DISTANCE = 0f; // TODO: set it to 1 when the app is done
     private static final String TRACK_DEFAULT_NAME = "Track name";
+    private static final int TRACK_DEFAULT_COLOR = Color.BLACK;
 
     private String mTrackId = null;
     private String mEncodedTrack = "";
@@ -111,7 +113,15 @@ public class TrackService extends Service {
 
     private void insertTrack() {
         AppExecutors.getInstance().diskIO().execute(() ->
-                mDb.trackDao().insertTrack(new TrackEntry(TRACK_DEFAULT_NAME, mTrackId, mEncodedTrack, new Date(), new Date())));
+                mDb.trackDao().insertTrack(new TrackEntry(
+                        TRACK_DEFAULT_NAME,
+                        mTrackId,
+                        mEncodedTrack,
+                        new Date(),
+                        new Date(),
+                        false,
+                        true,
+                        TRACK_DEFAULT_COLOR)));
     }
 
     private void updateTrack() {

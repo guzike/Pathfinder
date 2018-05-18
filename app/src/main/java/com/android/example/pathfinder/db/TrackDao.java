@@ -17,8 +17,17 @@ public interface TrackDao {
     @Query("SELECT * FROM track")
     LiveData<List<TrackEntry>> loadAllTracks();
 
+    @Query("SELECT * FROM track WHERE displayed = 1 OR inProgress = 1")
+    LiveData<List<TrackEntry>> getTracksToDisplay();
+
+    @Query("SELECT * FROM track WHERE inProgress = 1")
+    LiveData<List<TrackEntry>> getTracksInProgress();
+
     @Query("UPDATE track SET track = :track, endDate = :endDate WHERE trackId = :trackId")
     void updateTrack(String trackId, String track, Date endDate);
+
+    @Query("UPDATE track SET inProgress = 0 WHERE inProgress = 1")
+    void resetProgressState();
 
     @Insert
     void insertTrack(TrackEntry trackEntry);
