@@ -16,4 +16,8 @@
     <string name="notification_message">Track recording in progress</string>
     <string name="ticker_text">Recording</string>
 
+    <!--    SnackBar    -->
+    <string name="snack_bar_recording_started">Recording started</string>
+    <string name="snack_bar_recording_stopped">Recording stopped</string>
+
 </resources>

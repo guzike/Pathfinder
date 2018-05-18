@@ -15,16 +15,19 @@ import java.util.List;
 public interface TrackDao {
 
     @Query("SELECT * FROM track")
-    LiveData<List<TrackEntry>> loadAllTracks();
+    LiveData<List<TrackEntry>> getAllTracks();
 
-    @Query("SELECT * FROM track WHERE displayed = 1 OR inProgress = 1")
+    @Query("SELECT * FROM track WHERE inProgress = 1 OR displayed = 1")
     LiveData<List<TrackEntry>> getTracksToDisplay();
 
-    @Query("SELECT * FROM track WHERE inProgress = 1")
-    LiveData<List<TrackEntry>> getTracksInProgress();
+    @Query("SELECT * FROM track WHERE inProgress = 1 ORDER BY id DESC LIMIT 1")
+    LiveData<TrackEntry> getTrackInProgress();
 
     @Query("UPDATE track SET track = :track, endDate = :endDate WHERE trackId = :trackId")
     void updateTrack(String trackId, String track, Date endDate);
+
+    @Query("DELETE FROM track WHERE trackId = :trackId")
+    void deleteTrack(String trackId);
 
     @Query("UPDATE track SET inProgress = 0 WHERE inProgress = 1")
     void resetProgressState();

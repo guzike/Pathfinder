@@ -1,6 +1,7 @@
 package com.android.example.pathfinder;
 
 import android.Manifest;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -12,15 +13,22 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.android.example.pathfinder.db.TrackEntry;
 import com.android.example.pathfinder.utils.PermissionUtils;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMyLocationClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.PolyUtil;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements
@@ -29,10 +37,15 @@ public class MainActivity extends AppCompatActivity
         OnMapReadyCallback,
         ActivityCompat.OnRequestPermissionsResultCallback {
 
+    private static final String TAG = MainActivity.class.getSimpleName();
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
     private boolean mPermissionDenied = false;
+    private boolean mIsIdleSate = false;
     private GoogleMap mMap;
+    private PermissionUtils.PermissionDeniedDialog mPermissionDeniedDialog;
+    private PermissionUtils.RationaleDialog mRationaleDialog;
+    private FloatingActionButton mFab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,18 +54,23 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(view ->
-                {
-                    Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show();
-                    Intent intent = new Intent(this, TrackService.class);
-                    startService(intent);
-                }
-        );
+        mFab = findViewById(R.id.fab);
+        mFab.setOnClickListener(view -> {
+            showSnackBar(mIsIdleSate);
+            Intent intent = new Intent(this, TrackService.class);
+            intent.setAction(TrackService.ACTION_TOGGLE);
+            startService(intent);
+        });
 
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+    }
+
+    @Override
+    protected void onPause() {
+        dismissAllDialogs();
+        super.onPause();
     }
 
     @Override
@@ -84,6 +102,7 @@ public class MainActivity extends AppCompatActivity
         mMap.setOnMyLocationButtonClickListener(this);
         mMap.setOnMyLocationClickListener(this);
         enableMyLocation();
+        setupViewModel();
     }
 
     @Override
@@ -123,12 +142,23 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    private void dismissAllDialogs() {
+        if (mPermissionDeniedDialog != null) {
+            mPermissionDeniedDialog.dismiss();
+            mPermissionDeniedDialog = null;
+        }
+        if (mRationaleDialog != null) {
+            mRationaleDialog.dismiss();
+            mRationaleDialog = null;
+        }
+    }
+
     /**
      * Displays a dialog with error message explaining that the location permission is missing.
      */
     private void showMissingPermissionError() {
-        PermissionUtils.PermissionDeniedDialog
-                .newInstance(true).show(getSupportFragmentManager(), "dialog");
+        mPermissionDeniedDialog = PermissionUtils.PermissionDeniedDialog.newInstance();
+        mPermissionDeniedDialog.show(getSupportFragmentManager(), "dialog");
     }
 
     /**
@@ -138,11 +168,45 @@ public class MainActivity extends AppCompatActivity
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             // Permission to access the location is missing.
-            PermissionUtils.requestPermission(this, LOCATION_PERMISSION_REQUEST_CODE,
-                    Manifest.permission.ACCESS_FINE_LOCATION, true);
+            mRationaleDialog = PermissionUtils.requestPermission(this, LOCATION_PERMISSION_REQUEST_CODE,
+                    Manifest.permission.ACCESS_FINE_LOCATION);
         } else if (mMap != null) {
             // Access to the location has been granted to the app.
             mMap.setMyLocationEnabled(true);
         }
+    }
+
+    private void setupViewModel() {
+        MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        viewModel.getTracksToDisplay().observe(this, this::drawTracks);
+        viewModel.getTrackInProgress().observe(this, this::updateUi);
+    }
+
+    private void drawTracks(List<TrackEntry> trackEntries) {
+        Log.d(TAG, "drawTracks");
+        mMap.clear();
+        for (TrackEntry track : trackEntries) {
+            drawTrack(track);
+        }
+    }
+
+    private void drawTrack(TrackEntry track) {
+        List<LatLng> decodedPath = PolyUtil.decode(track.getTrack());
+        mMap.addPolyline(new PolylineOptions().addAll(decodedPath).color(track.getColor()));
+    }
+
+    private void updateUi(TrackEntry trackEntry) {
+        Log.d(TAG, "updateUi");
+        mIsIdleSate = trackEntry == null;
+        updateFab(mIsIdleSate);
+    }
+
+    private void updateFab(boolean isIdleState) {
+        mFab.setImageResource(isIdleState ? R.drawable.ic_circle : R.drawable.ic_square);
+    }
+
+    private void showSnackBar(boolean isIdleState) {
+        int snackBarText = isIdleState ? R.string.snack_bar_recording_started : R.string.snack_bar_recording_stopped;
+        Snackbar.make(mFab, getText(snackBarText), Snackbar.LENGTH_LONG).setAction("Action", null).show();
     }
 }

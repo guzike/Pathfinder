@@ -35,6 +35,10 @@ public class TrackService extends Service {
     private static final String TRACK_DEFAULT_NAME = "Track name";
     private static final int TRACK_DEFAULT_COLOR = Color.BLACK;
 
+    public static final String ACTION_TOGGLE = "ACTION_TOGGLE";
+    public static final String ACTION_START = "ACTION_START";
+    public static final String ACTION_STOP = "ACTION_STOP";
+
     private String mTrackId = null;
     private String mEncodedTrack = "";
 
@@ -129,6 +133,14 @@ public class TrackService extends Service {
                 mDb.trackDao().updateTrack(mTrackId, mEncodedTrack, new Date()));
     }
 
+    private void stopRecordings() {
+        AppExecutors.getInstance().diskIO().execute(() -> mDb.trackDao().resetProgressState());
+    }
+
+    private void deleteTrack() {
+        AppExecutors.getInstance().diskIO().execute(() -> mDb.trackDao().deleteTrack(mTrackId));
+    }
+
     private LocationRequest createLocationRequest() {
         return new LocationRequest()
                 .setInterval(LOCATION_INTERVAL)
@@ -150,6 +162,10 @@ public class TrackService extends Service {
     }
 
     private void stopService() {
+        if ("".equals(mEncodedTrack)) {
+            deleteTrack();
+        }
+        stopRecordings();
         stopSelf();
     }
 
