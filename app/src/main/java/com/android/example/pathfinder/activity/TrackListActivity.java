@@ -29,7 +29,7 @@ public class TrackListActivity extends AppCompatActivity {
 
         mTracksList = Collections.emptyList();
         mRecyclerView = findViewById(R.id.track_list);
-        mTracksAdapter = new TracksAdapter(mTracksList);
+        mTracksAdapter = new TracksAdapter(this, mTracksList);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(layoutManager);
