@@ -1,4 +1,4 @@
-package com.android.example.pathfinder;
+package com.android.example.pathfinder.activity;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;

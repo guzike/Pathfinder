@@ -1,4 +1,4 @@
-package com.android.example.pathfinder;
+package com.android.example.pathfinder.service;
 
 import android.Manifest;
 import android.app.Notification;
@@ -14,6 +14,10 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
+import com.android.example.pathfinder.App;
+import com.android.example.pathfinder.AppExecutors;
+import com.android.example.pathfinder.activity.MainActivity;
+import com.android.example.pathfinder.R;
 import com.android.example.pathfinder.db.AppDatabase;
 import com.android.example.pathfinder.db.TrackEntry;
 import com.google.android.gms.location.FusedLocationProviderClient;

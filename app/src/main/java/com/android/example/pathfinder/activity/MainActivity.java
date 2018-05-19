@@ -1,15 +1,19 @@
-package com.android.example.pathfinder;
+package com.android.example.pathfinder.activity;
 
 import android.Manifest;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -17,7 +21,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.android.example.pathfinder.R;
 import com.android.example.pathfinder.db.TrackEntry;
+import com.android.example.pathfinder.fragment.TrackListFragment;
+import com.android.example.pathfinder.service.TrackService;
 import com.android.example.pathfinder.utils.PermissionUtils;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener;
@@ -45,7 +52,8 @@ public class MainActivity extends AppCompatActivity
     private GoogleMap mMap;
     private PermissionUtils.PermissionDeniedDialog mPermissionDeniedDialog;
     private PermissionUtils.RationaleDialog mRationaleDialog;
-    private FloatingActionButton mFab;
+    private FloatingActionButton mRecFab;
+    private FloatingActionButton mListFab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,13 +62,18 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mFab = findViewById(R.id.fab);
-        mFab.setOnClickListener(view -> {
+        mRecFab = findViewById(R.id.rec_fab);
+        mRecFab.setBackgroundColor(Color.WHITE);
+        mRecFab.setOnClickListener(view -> {
             showSnackBar(mIsIdleSate);
             Intent intent = new Intent(this, TrackService.class);
             intent.setAction(TrackService.ACTION_TOGGLE);
             startService(intent);
         });
+
+        mListFab = findViewById(R.id.list_fab);
+        mListFab.setBackgroundColor(Color.WHITE);
+        mListFab.setOnClickListener(view -> showTrackList());
 
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
@@ -75,7 +88,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onPause() {
-        dismissAllDialogs();
+        dismissPermissionDialogs();
         super.onPause();
     }
 
@@ -154,7 +167,7 @@ public class MainActivity extends AppCompatActivity
         startService(intent);
     }
 
-    private void dismissAllDialogs() {
+    private void dismissPermissionDialogs() {
         if (mPermissionDeniedDialog != null) {
             mPermissionDeniedDialog.dismiss();
             mPermissionDeniedDialog = null;
@@ -214,11 +227,27 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void updateFab(boolean isIdleState) {
-        mFab.setImageResource(isIdleState ? R.drawable.ic_circle : R.drawable.ic_square);
+        mRecFab.setImageResource(isIdleState ? R.drawable.ic_circle : R.drawable.ic_square);
     }
 
     private void showSnackBar(boolean isIdleState) {
         int snackBarText = isIdleState ? R.string.snack_bar_recording_started : R.string.snack_bar_recording_stopped;
-        Snackbar.make(mFab, getText(snackBarText), Snackbar.LENGTH_LONG).setAction("Action", null).show();
+        Snackbar.make(mRecFab, getText(snackBarText), Snackbar.LENGTH_LONG).setAction("Action", null).show();
+    }
+
+    void showTrackList() {
+        // DialogFragment.show() will take care of adding the fragment
+        // in a transaction.  We also want to remove any currently showing
+        // dialog, so make our own transaction and take care of that here.
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(null);
+
+        // Create and show the dialog.
+        DialogFragment newFragment = new TrackListFragment();
+        newFragment.show(ft, "dialog");
     }
 }
