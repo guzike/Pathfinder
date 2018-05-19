@@ -35,6 +35,7 @@ public class TrackService extends Service {
     private static final String TRACK_DEFAULT_NAME = "Track name";
     private static final int TRACK_DEFAULT_COLOR = Color.BLACK;
 
+    public static final String ACTION_CHECK_STATE = "ACTION_CHECK_STATE";
     public static final String ACTION_TOGGLE = "ACTION_TOGGLE";
     public static final String ACTION_START = "ACTION_START";
     public static final String ACTION_STOP = "ACTION_STOP";
@@ -62,21 +63,6 @@ public class TrackService extends Service {
         mDb = AppDatabase.getInstance(this);
         mTrackId = String.valueOf(System.currentTimeMillis());
 
-        Intent notificationIntent = new Intent(this, MainActivity.class);
-        PendingIntent pendingIntent =
-                PendingIntent.getActivity(this, 0, notificationIntent, 0);
-
-        Notification notification =
-                new NotificationCompat.Builder(this, App.CHANNEL_ID)
-                        .setContentTitle(getText(R.string.notification_title))
-                        .setContentText(getText(R.string.notification_message))
-                        .setSmallIcon(R.mipmap.ic_launcher_round)
-                        .setContentIntent(pendingIntent)
-                        .setTicker(getText(R.string.ticker_text))
-                        .build();
-
-        startForeground(ONGOING_NOTIFICATION_ID, notification);
-
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         mLocationCallback = new LocationCallback() {
             @Override
@@ -98,13 +84,48 @@ public class TrackService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand");
-        if (mIsStarted) {
+        String action = intent.getAction();
+        if (action == null || action.isEmpty()) {
             stopService();
-        } else {
-            mIsStarted = true;
-            insertTrack();
-            startLocationUpdates();
+            return super.onStartCommand(intent, flags, startId);
         }
+        switch (action) {
+            case ACTION_CHECK_STATE:
+                if (!mIsStarted) {
+                    stopService();
+                }
+                return super.onStartCommand(intent, flags, startId);
+            case ACTION_TOGGLE:
+                if (mIsStarted) {
+                    stopService();
+                    return super.onStartCommand(intent, flags, startId);
+                } else {
+                    mIsStarted = true;
+                    insertTrack();
+                    startLocationUpdates();
+                }
+                break;
+            default:
+                stopService();
+                return super.onStartCommand(intent, flags, startId);
+        }
+
+
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        PendingIntent pendingIntent =
+                PendingIntent.getActivity(this, 0, notificationIntent, 0);
+
+        Notification notification =
+                new NotificationCompat.Builder(this, App.CHANNEL_ID)
+                        .setContentTitle(getText(R.string.notification_title))
+                        .setContentText(getText(R.string.notification_message))
+                        .setSmallIcon(R.mipmap.ic_launcher_round)
+                        .setContentIntent(pendingIntent)
+                        .setTicker(getText(R.string.ticker_text))
+                        .build();
+
+        startForeground(ONGOING_NOTIFICATION_ID, notification);
+
         return super.onStartCommand(intent, flags, startId);
     }
 

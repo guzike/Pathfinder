@@ -68,6 +68,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        checkTrackService();
+    }
+
+    @Override
     protected void onPause() {
         dismissAllDialogs();
         super.onPause();
@@ -140,6 +146,12 @@ public class MainActivity extends AppCompatActivity
             showMissingPermissionError();
             mPermissionDenied = false;
         }
+    }
+
+    private void checkTrackService() {
+        Intent intent = new Intent(this, TrackService.class);
+        intent.setAction(TrackService.ACTION_CHECK_STATE);
+        startService(intent);
     }
 
     private void dismissAllDialogs() {
