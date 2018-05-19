@@ -37,8 +37,6 @@ public class TrackService extends Service {
 
     public static final String ACTION_CHECK_STATE = "ACTION_CHECK_STATE";
     public static final String ACTION_TOGGLE = "ACTION_TOGGLE";
-    public static final String ACTION_START = "ACTION_START";
-    public static final String ACTION_STOP = "ACTION_STOP";
 
     private String mTrackId = null;
     private String mEncodedTrack = "";
