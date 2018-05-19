@@ -33,15 +33,4 @@
         app:backgroundTint="@android:color/background_light"
         app:srcCompat="@drawable/ic_circle" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/list_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|end"
-        android:layout_marginEnd="@dimen/fab_margin"
-        android:layout_marginTop="@dimen/list_fab_margin_top"
-        app:backgroundTint="@android:color/background_light"
-        app:fabSize="mini"
-        app:srcCompat="@drawable/ic_layers" />
-
 </android.support.design.widget.CoordinatorLayout>

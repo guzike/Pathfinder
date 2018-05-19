@@ -11,9 +11,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -23,7 +20,6 @@ import android.view.MenuItem;
 
 import com.android.example.pathfinder.R;
 import com.android.example.pathfinder.db.TrackEntry;
-import com.android.example.pathfinder.fragment.TrackListFragment;
 import com.android.example.pathfinder.service.TrackService;
 import com.android.example.pathfinder.utils.PermissionUtils;
 import com.google.android.gms.maps.GoogleMap;
@@ -46,6 +42,7 @@ public class MainActivity extends AppCompatActivity
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+    private static final String TRACK_LIST_FRAGMENT_TAG = "TRACK_LIST_FRAGMENT_TAG";
 
     private boolean mPermissionDenied = false;
     private boolean mIsIdleSate = false;
@@ -53,7 +50,6 @@ public class MainActivity extends AppCompatActivity
     private PermissionUtils.PermissionDeniedDialog mPermissionDeniedDialog;
     private PermissionUtils.RationaleDialog mRationaleDialog;
     private FloatingActionButton mRecFab;
-    private FloatingActionButton mListFab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,10 +66,6 @@ public class MainActivity extends AppCompatActivity
             intent.setAction(TrackService.ACTION_TOGGLE);
             startService(intent);
         });
-
-        mListFab = findViewById(R.id.list_fab);
-        mListFab.setBackgroundColor(Color.WHITE);
-        mListFab.setOnClickListener(view -> showTrackList());
 
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
@@ -106,8 +98,9 @@ public class MainActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_tracks_list) {
+            Intent intent = new Intent(MainActivity.this, TrackListActivity.class);
+            startActivity(intent);
             return true;
         }
 
@@ -235,19 +228,4 @@ public class MainActivity extends AppCompatActivity
         Snackbar.make(mRecFab, getText(snackBarText), Snackbar.LENGTH_LONG).setAction("Action", null).show();
     }
 
-    void showTrackList() {
-        // DialogFragment.show() will take care of adding the fragment
-        // in a transaction.  We also want to remove any currently showing
-        // dialog, so make our own transaction and take care of that here.
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
-        if (prev != null) {
-            ft.remove(prev);
-        }
-        ft.addToBackStack(null);
-
-        // Create and show the dialog.
-        DialogFragment newFragment = new TrackListFragment();
-        newFragment.show(ft, "dialog");
-    }
 }

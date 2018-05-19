@@ -14,7 +14,7 @@ import java.util.List;
 @Dao
 public interface TrackDao {
 
-    @Query("SELECT * FROM track")
+    @Query("SELECT * FROM track ORDER BY id DESC")
     LiveData<List<TrackEntry>> getAllTracks();
 
     @Query("SELECT * FROM track WHERE inProgress = 1 OR displayed = 1")
