@@ -13,6 +13,7 @@ public interface TrackDao {
 
     /**
      * Select all tracks in descending order.
+     *
      * @return the list of all tracks.
      */
     @Query("SELECT * FROM track ORDER BY id DESC")
@@ -20,13 +21,15 @@ public interface TrackDao {
 
     /**
      * Select all tracks which are supposed to be displayed on the map.
+     *
      * @return the list of all tracks to be drawn.
      */
     @Query("SELECT * FROM track WHERE inProgress = 1 OR displayed = 1")
     LiveData<List<TrackEntry>> getTracksToDisplay();
 
     /**
-     * Select track by it's trackId.
+     * Select track by its trackId.
+     *
      * @param trackId the trackId of the track.
      * @return the track with provided trackId.
      */
@@ -35,6 +38,7 @@ public interface TrackDao {
 
     /**
      * Select track which is currently in progress state.
+     *
      * @return the track in progress.
      */
     @Query("SELECT * FROM track WHERE inProgress = 1 ORDER BY id DESC LIMIT 1")
@@ -42,8 +46,9 @@ public interface TrackDao {
 
     /**
      * Update track with new track data and end time.
+     *
      * @param trackId the trackId of the track to be updated.
-     * @param track the new track data.
+     * @param track   the new track data.
      * @param endDate the new end date.
      */
     @Query("UPDATE track SET track = :track, endDate = :endDate WHERE trackId = :trackId")
@@ -51,9 +56,10 @@ public interface TrackDao {
 
     /**
      * Update track details.
-     * @param trackId the trackId of the track to be updated.
-     * @param name the new name of the track.
-     * @param color the new color of the track.
+     *
+     * @param trackId   the trackId of the track to be updated.
+     * @param name      the new name of the track.
+     * @param color     the new color of the track.
      * @param displayed the new displayed state of the track.
      */
     @Query("UPDATE track SET name = :name, color = :color, displayed = :displayed WHERE trackId = :trackId")
@@ -67,6 +73,7 @@ public interface TrackDao {
 
     /**
      * Delete the track from the database.
+     *
      * @param trackId the trackId of the track to be deleted.
      */
     @Query("DELETE FROM track WHERE trackId = :trackId")
@@ -74,6 +81,7 @@ public interface TrackDao {
 
     /**
      * Insert the new track to the database.
+     *
      * @param trackEntry the track to be inserted.
      */
     @Insert

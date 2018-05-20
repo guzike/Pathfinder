@@ -176,6 +176,7 @@ public class TrackService extends Service {
 
     /**
      * Create new location request to location services.
+     *
      * @return the new location request.
      */
     private LocationRequest createLocationRequest() {

@@ -93,6 +93,7 @@ public class TrackDialogFragment extends DialogFragment {
 
     /**
      * Update the UI with new data from the database.
+     *
      * @param track the new track data.
      */
     private void updateUi(@Nullable TrackEntry track) {
