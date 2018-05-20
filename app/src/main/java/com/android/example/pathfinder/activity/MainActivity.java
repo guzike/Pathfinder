@@ -210,6 +210,7 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * Draw provided tracks on the map.
+     *
      * @param trackEntries the tracks to be drawn.
      */
     private void drawTracks(List<TrackEntry> trackEntries) {
@@ -222,6 +223,7 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * Draw provided track on the map.
+     *
      * @param track the track to be drawn.
      */
     private void drawTrack(TrackEntry track) {
@@ -231,6 +233,7 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * Update current state depending on existing of a track in "recording" state.
+     *
      * @param trackEntry the track in "recording" state.
      */
     private void updateUi(TrackEntry trackEntry) {
@@ -241,6 +244,7 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * Update floating action button state.
+     *
      * @param isIdleState the new state.
      */
     private void updateFab(boolean isIdleState) {
@@ -249,6 +253,7 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * Show Snackbar to indicate recording status changes.
+     *
      * @param isIdleState the current state.
      */
     private void showSnackBar(boolean isIdleState) {

@@ -36,5 +36,6 @@
     <!--    Tracks activity    -->
     <string name="track_status_in_progress">in progress</string>
     <string name="track_status_displayed">displayed</string>
+    <string name="no_tracks">You have no tracks yet.</string>
 
 </resources>

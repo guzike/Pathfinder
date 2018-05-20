@@ -70,6 +70,7 @@ public class TracksAdapter extends RecyclerView.Adapter<TracksAdapter.TrackViewH
 
     /**
      * Show track dialog.
+     *
      * @param trackId the trackId of a track.
      */
     private void showDialog(String trackId) {
