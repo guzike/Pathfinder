@@ -33,4 +33,8 @@
     <string name="track_name_hint">Enter name</string>
     <string name="track_color_hint">Enter color</string>
 
+    <!--    Tracks activity    -->
+    <string name="track_status_in_progress">in progress</string>
+    <string name="track_status_displayed">displayed</string>
+
 </resources>

@@ -29,6 +29,9 @@ public interface TrackDao {
     @Query("UPDATE track SET track = :track, endDate = :endDate WHERE trackId = :trackId")
     void updateTrack(String trackId, String track, Date endDate);
 
+    @Query("UPDATE track SET name = :name, color = :color, displayed = :displayed WHERE trackId = :trackId")
+    void updateTrackDetails(String trackId, String name, int color, boolean displayed);
+
     @Query("DELETE FROM track WHERE trackId = :trackId")
     void deleteTrack(String trackId);
 

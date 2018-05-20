@@ -42,6 +42,15 @@ public class TracksAdapter extends RecyclerView.Adapter<TracksAdapter.TrackViewH
     public void onBindViewHolder(@NonNull TrackViewHolder holder, int position) {
         TrackEntry track = mTracksList.get(position);
         holder.name.setText(track.getName());
+
+        if (track.isInProgress()) {
+            holder.status.setText(R.string.track_status_in_progress);
+            holder.status.setVisibility(View.VISIBLE);
+        } else if (track.isDisplayed()) {
+            holder.status.setText(R.string.track_status_displayed);
+            holder.status.setVisibility(View.VISIBLE);
+        }
+
         holder.clickItem.setTag(track.getTrackId());
         holder.clickItem.setOnClickListener(v -> showDialog((String) v.getTag()));
     }
@@ -58,11 +67,13 @@ public class TracksAdapter extends RecyclerView.Adapter<TracksAdapter.TrackViewH
 
     public class TrackViewHolder extends RecyclerView.ViewHolder {
         public TextView name;
+        public TextView status;
         public View clickItem;
 
         TrackViewHolder(View view) {
             super(view);
             name = view.findViewById(R.id.track_name);
+            status = view.findViewById(R.id.track_status);
             clickItem = view.findViewById(R.id.click_item);
         }
     }

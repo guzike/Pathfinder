@@ -5,6 +5,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
@@ -15,6 +16,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+import com.android.example.pathfinder.AppExecutors;
 import com.android.example.pathfinder.R;
 import com.android.example.pathfinder.activity.TrackViewModel;
 import com.android.example.pathfinder.activity.TrackViewModelFactory;
@@ -68,7 +70,10 @@ public class TrackDialogFragment extends DialogFragment {
         View v = inflater.inflate(R.layout.track_dialog, container, false);
 
         mOkButton = v.findViewById(R.id.ok_button);
-        mOkButton.setOnClickListener(v1 -> TrackDialogFragment.this.dismiss());
+        mOkButton.setOnClickListener(button -> {
+            updateTrackDetails();
+            TrackDialogFragment.this.dismiss();
+        });
 
         mNameInput = v.findViewById(R.id.name_input);
         mColorInput = v.findViewById(R.id.color_input);
@@ -78,17 +83,33 @@ public class TrackDialogFragment extends DialogFragment {
 
         TrackViewModelFactory factory = new TrackViewModelFactory(mDb, mTrackId);
         final TrackViewModel viewModel = ViewModelProviders.of(this, factory).get(TrackViewModel.class);
-        viewModel.getTrack().observe(this, this::updateUi);
+        viewModel.getTrack().observe(this, track -> {
+            viewModel.getTrack().removeObservers(this);
+            updateUi(track);
+        });
 
         return v;
     }
 
-    private void updateUi(TrackEntry track) {
+    private void updateUi(@Nullable TrackEntry track) {
         Log.d(TAG, "updateUi of Dialog");
+        if (track == null) {
+            return;
+        }
         mNameInput.setText(track.getName());
         mColorInput.setText(String.valueOf(track.getColor()));
         mStartDate.setText(track.getStartDate().toString());
         mEndDate.setText(track.getEndDate().toString());
         mDisplayCheckbox.setChecked(track.isDisplayed());
+    }
+
+    private void updateTrackDetails() {
+        AppExecutors.getInstance().diskIO().execute(() -> {
+            mDb.trackDao().updateTrackDetails(
+                    mTrackId,
+                    mNameInput.getText().toString(),
+                    Integer.valueOf(mColorInput.getText().toString()),
+                    mDisplayCheckbox.isChecked());
+        });
     }
 }
