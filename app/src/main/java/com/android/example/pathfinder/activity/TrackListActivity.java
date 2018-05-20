@@ -53,10 +53,10 @@ public class TrackListActivity extends AppCompatActivity {
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                if (!mTracksList.get(viewHolder.getAdapterPosition()).isInProgress()) {
+                if (!mTracksList.get(viewHolder.getAdapterPosition()).isInProgress()) { // check track status
                     deleteTrack((String) viewHolder.itemView.getTag());
                 } else {
-                    mTracksAdapter.notifyDataSetChanged();
+                    mTracksAdapter.notifyDataSetChanged(); // notify adapter to refresh the list to show swiped item again
                 }
             }
         };
