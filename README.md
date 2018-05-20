@@ -1,5 +1,4 @@
 # Pathfinder Android Sample App
-===================================
 
 Allows user to save tracks using location information.
 
