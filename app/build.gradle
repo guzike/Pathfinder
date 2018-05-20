@@ -25,16 +25,16 @@ android {
 dependencies {
     def room_version = "1.1.0"
     def lifecycle_version = "1.1.1"
+    def play_services_version = "15.0.1"
 
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
     implementation 'com.android.support:design:27.1.1'
 
-    implementation 'com.google.android.gms:play-services-maps:15.0.1'
-    implementation 'com.google.android.gms:play-services-location:15.0.1'
-    //noinspection GradleDynamicVersion
-    implementation 'com.google.maps.android:android-maps-utils:0.5+'
+    implementation "com.google.android.gms:play-services-maps:$play_services_version"
+    implementation "com.google.android.gms:play-services-location:$play_services_version"
+    implementation 'com.google.maps.android:android-maps-utils:0.5'
 
     //Room
     implementation "android.arch.persistence.room:runtime:$room_version"

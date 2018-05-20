@@ -20,7 +20,7 @@ public interface TrackDao {
     @Query("SELECT * FROM track WHERE inProgress = 1 OR displayed = 1")
     LiveData<List<TrackEntry>> getTracksToDisplay();
 
-    @Query("SELECT * FROM track WHERE id = :trackId")
+    @Query("SELECT * FROM track WHERE trackId = :trackId")
     LiveData<TrackEntry> getTrackById(String trackId);
 
     @Query("SELECT * FROM track WHERE inProgress = 1 ORDER BY id DESC LIMIT 1")

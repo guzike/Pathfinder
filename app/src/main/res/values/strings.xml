@@ -23,11 +23,14 @@
     <!--    Content description    -->
     <string name="delete_button_desc">Delete button</string>
 
-    <!--    Tracks list activity    -->
+    <!--    Track fragment    -->
+    <string name="track_title">Track details</string>
     <string name="track_name">Name</string>
     <string name="track_start_date">Start</string>
     <string name="track_end_date">End</string>
     <string name="track_color">Color</string>
     <string name="track_display">Display</string>
+    <string name="track_name_hint">Enter name</string>
+    <string name="track_color_hint">Enter color</string>
 
 </resources>
