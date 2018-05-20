@@ -10,11 +10,8 @@ import android.content.Context;
 @TypeConverters(DateConverter.class)
 public abstract class AppDatabase extends RoomDatabase {
 
-    private static AppDatabase sInstance;
-
-    public abstract TrackDao trackDao();
-
     private static final Object sLock = new Object();
+    private static AppDatabase sInstance;
 
     public static AppDatabase getInstance(Context context) {
         synchronized (sLock) {
@@ -26,5 +23,7 @@ public abstract class AppDatabase extends RoomDatabase {
             return sInstance;
         }
     }
+
+    public abstract TrackDao trackDao();
 
 }

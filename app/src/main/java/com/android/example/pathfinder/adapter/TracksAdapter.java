@@ -68,6 +68,22 @@ public class TracksAdapter extends RecyclerView.Adapter<TracksAdapter.TrackViewH
         notifyDataSetChanged();
     }
 
+    /**
+     * Show track dialog.
+     * @param trackId the trackId of a track.
+     */
+    private void showDialog(String trackId) {
+        FragmentTransaction ft = mActivity.getSupportFragmentManager().beginTransaction();
+        Fragment prev = mActivity.getSupportFragmentManager().findFragmentByTag(FRAGMENT_DIALOG_TAG);
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(null);
+
+        DialogFragment newFragment = TrackDialogFragment.newInstance(trackId);
+        newFragment.show(ft, FRAGMENT_DIALOG_TAG);
+    }
+
     public class TrackViewHolder extends RecyclerView.ViewHolder {
         public TextView name;
         public TextView status;
@@ -79,17 +95,5 @@ public class TracksAdapter extends RecyclerView.Adapter<TracksAdapter.TrackViewH
             status = view.findViewById(R.id.track_status);
             clickItem = view.findViewById(R.id.click_item);
         }
-    }
-
-    private void showDialog(String trackId) {
-        FragmentTransaction ft = mActivity.getSupportFragmentManager().beginTransaction();
-        Fragment prev = mActivity.getSupportFragmentManager().findFragmentByTag(FRAGMENT_DIALOG_TAG);
-        if (prev != null) {
-            ft.remove(prev);
-        }
-        ft.addToBackStack(null);
-
-        DialogFragment newFragment = TrackDialogFragment.newInstance(trackId);
-        newFragment.show(ft, FRAGMENT_DIALOG_TAG);
     }
 }

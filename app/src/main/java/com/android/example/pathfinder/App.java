@@ -18,6 +18,9 @@ public class App extends Application {
         createNotificationChannel();
     }
 
+    /**
+     * Create new notifications channel for TrackService notifications.
+     */
     private void createNotificationChannel() {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
