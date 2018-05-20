@@ -42,7 +42,6 @@ public class MainActivity extends AppCompatActivity
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
-    private static final String TRACK_LIST_FRAGMENT_TAG = "TRACK_LIST_FRAGMENT_TAG";
 
     private boolean mPermissionDenied = false;
     private boolean mIsIdleSate = false;
@@ -154,12 +153,18 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Checks the state of TrackService in case it was killed.
+     */
     private void checkTrackService() {
         Intent intent = new Intent(this, TrackService.class);
         intent.setAction(TrackService.ACTION_CHECK_STATE);
         startService(intent);
     }
 
+    /**
+     * Dismiss all permission dialogs.
+     */
     private void dismissPermissionDialogs() {
         if (mPermissionDeniedDialog != null) {
             mPermissionDeniedDialog.dismiss();
@@ -194,12 +199,19 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Setup view model for the MainActivity.
+     */
     private void setupViewModel() {
         MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
         viewModel.getTracksToDisplay().observe(this, this::drawTracks);
         viewModel.getTrackInProgress().observe(this, this::updateUi);
     }
 
+    /**
+     * Draw provided tracks on the map.
+     * @param trackEntries the tracks to be drawn.
+     */
     private void drawTracks(List<TrackEntry> trackEntries) {
         Log.d(TAG, "drawTracks");
         mMap.clear();
@@ -208,21 +220,37 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Draw provided track on the map.
+     * @param track the track to be drawn.
+     */
     private void drawTrack(TrackEntry track) {
         List<LatLng> decodedPath = PolyUtil.decode(track.getTrack());
         mMap.addPolyline(new PolylineOptions().addAll(decodedPath).color(track.getColor()));
     }
 
+    /**
+     * Update current state depending on existing of a track in "recording" state.
+     * @param trackEntry the track in "recording" state.
+     */
     private void updateUi(TrackEntry trackEntry) {
         Log.d(TAG, "updateUi");
         mIsIdleSate = trackEntry == null;
         updateFab(mIsIdleSate);
     }
 
+    /**
+     * Update floating action button state.
+     * @param isIdleState the new state.
+     */
     private void updateFab(boolean isIdleState) {
         mRecFab.setImageResource(isIdleState ? R.drawable.ic_circle : R.drawable.ic_square);
     }
 
+    /**
+     * Show Snackbar to indicate recording status changes.
+     * @param isIdleState the current state.
+     */
     private void showSnackBar(boolean isIdleState) {
         int snackBarText = isIdleState ? R.string.snack_bar_recording_started : R.string.snack_bar_recording_stopped;
         Snackbar.make(mRecFab, getText(snackBarText), Snackbar.LENGTH_LONG).setAction("Action", null).show();

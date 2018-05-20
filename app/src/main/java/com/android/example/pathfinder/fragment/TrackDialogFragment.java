@@ -91,6 +91,10 @@ public class TrackDialogFragment extends DialogFragment {
         return v;
     }
 
+    /**
+     * Update the UI with new data from the database.
+     * @param track the new track data.
+     */
     private void updateUi(@Nullable TrackEntry track) {
         Log.d(TAG, "updateUi of Dialog");
         if (track == null) {
@@ -103,6 +107,9 @@ public class TrackDialogFragment extends DialogFragment {
         mDisplayCheckbox.setChecked(track.isDisplayed());
     }
 
+    /**
+     * Update information about the track in the database.
+     */
     private void updateTrackDetails() {
         AppExecutors.getInstance().diskIO().execute(() -> {
             mDb.trackDao().updateTrackDetails(

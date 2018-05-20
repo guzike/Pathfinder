@@ -16,8 +16,8 @@ import android.util.Log;
 
 import com.android.example.pathfinder.App;
 import com.android.example.pathfinder.AppExecutors;
-import com.android.example.pathfinder.activity.MainActivity;
 import com.android.example.pathfinder.R;
+import com.android.example.pathfinder.activity.MainActivity;
 import com.android.example.pathfinder.db.AppDatabase;
 import com.android.example.pathfinder.db.TrackEntry;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -32,16 +32,14 @@ import java.util.Date;
 import java.util.List;
 
 public class TrackService extends Service {
+    public static final String ACTION_CHECK_STATE = "ACTION_CHECK_STATE";
+    public static final String ACTION_TOGGLE = "ACTION_TOGGLE";
     private static final String TAG = TrackService.class.getSimpleName();
     private static final int ONGOING_NOTIFICATION_ID = 111;
     private static final int LOCATION_INTERVAL = 1000;
     private static final float LOCATION_DISTANCE = 0f; // TODO: set it to 1 when the app is done
     private static final String TRACK_DEFAULT_NAME = "Track name";
     private static final int TRACK_DEFAULT_COLOR = Color.BLACK;
-
-    public static final String ACTION_CHECK_STATE = "ACTION_CHECK_STATE";
-    public static final String ACTION_TOGGLE = "ACTION_TOGGLE";
-
     private String mTrackId = null;
     private String mEncodedTrack = "";
 
@@ -138,6 +136,9 @@ public class TrackService extends Service {
         mFusedLocationClient.removeLocationUpdates(mLocationCallback);
     }
 
+    /**
+     * Insert new track in the database.
+     */
     private void insertTrack() {
         AppExecutors.getInstance().diskIO().execute(() ->
                 mDb.trackDao().insertTrack(new TrackEntry(
@@ -151,19 +152,32 @@ public class TrackService extends Service {
                         TRACK_DEFAULT_COLOR)));
     }
 
+    /**
+     * Update current track with new track data and end date.
+     */
     private void updateTrack() {
         AppExecutors.getInstance().diskIO().execute(() ->
                 mDb.trackDao().updateTrack(mTrackId, mEncodedTrack, new Date()));
     }
 
+    /**
+     * Stop all pending recordings.
+     */
     private void stopRecordings() {
         AppExecutors.getInstance().diskIO().execute(() -> mDb.trackDao().resetProgressState());
     }
 
+    /**
+     * Delete current track from the database.
+     */
     private void deleteTrack() {
         AppExecutors.getInstance().diskIO().execute(() -> mDb.trackDao().deleteTrack(mTrackId));
     }
 
+    /**
+     * Create new location request to location services.
+     * @return the new location request.
+     */
     private LocationRequest createLocationRequest() {
         return new LocationRequest()
                 .setInterval(LOCATION_INTERVAL)
@@ -172,6 +186,9 @@ public class TrackService extends Service {
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
+    /**
+     * Start location updates if permissions were granted.
+     */
     private void startLocationUpdates() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -184,6 +201,9 @@ public class TrackService extends Service {
                 null /* Looper */);
     }
 
+    /**
+     * Stop current service saving data properly.
+     */
     private void stopService() {
         if ("".equals(mEncodedTrack)) {
             deleteTrack();

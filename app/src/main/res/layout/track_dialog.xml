@@ -130,7 +130,8 @@
             android:id="@+id/name_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/track_name_hint" />
+            android:hint="@string/track_name_hint"
+            android:maxLength="20" />
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
@@ -148,9 +149,9 @@
             android:id="@+id/color_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:hint="@string/track_color_hint"
             android:inputType="numberSigned"
-            android:maxLength="9"
-            android:hint="@string/track_color_hint" />
+            android:maxLength="9" />
     </android.support.design.widget.TextInputLayout>
 
     <CheckBox
