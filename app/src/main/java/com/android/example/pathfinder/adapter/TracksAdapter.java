@@ -49,6 +49,9 @@ public class TracksAdapter extends RecyclerView.Adapter<TracksAdapter.TrackViewH
         } else if (track.isDisplayed()) {
             holder.status.setText(R.string.track_status_displayed);
             holder.status.setVisibility(View.VISIBLE);
+        } else {
+            holder.status.setText("");
+            holder.status.setVisibility(View.GONE);
         }
 
         holder.clickItem.setTag(track.getTrackId());
