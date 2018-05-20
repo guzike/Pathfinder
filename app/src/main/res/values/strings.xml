@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name">Pathfinder</string>
+    <string name="track_list_activity_name">Manage tracks</string>
+    <string name="action_tracks_list">Manage all tracks</string>
+
+    <!--    Permissions    -->
+    <string name="permission_rationale_location">Access to the location service is required for creating your track records.</string>
+    <string name="location_permission_denied">This application requires location permission to enable the tracking functionality. Please try again and grant access to use the location.\nIf the permission has been permanently denied, it can be enabled from the System Settings.</string>
+
+    <!--    Notification channels    -->
+    <string name="channel_name">Track Service</string>
+    <string name="channel_description">Notifications from the Tracking Service</string>
+
+    <!--    Notifications    -->
+    <string name="notification_title">Recording</string>
+    <string name="notification_message">Track recording in progress</string>
+    <string name="ticker_text">Recording</string>
+
+    <!--    SnackBar    -->
+    <string name="snack_bar_recording_started">Recording started</string>
+    <string name="snack_bar_recording_stopped">Recording stopped</string>
+
+    <!--    Content description    -->
+    <string name="delete_button_desc">Delete button</string>
+
+    <!--    Track fragment    -->
+    <string name="track_title">Track details</string>
+    <string name="track_name">Name</string>
+    <string name="track_start_date">Start</string>
+    <string name="track_end_date">End</string>
+    <string name="track_color">Color</string>
+    <string name="track_display">Display</string>
+    <string name="track_name_hint">Enter name</string>
+    <string name="track_color_hint">Enter color</string>
+
+    <!--    Tracks activity    -->
+    <string name="track_status_in_progress">in progress</string>
+    <string name="track_status_displayed">displayed</string>
+
+</resources>
