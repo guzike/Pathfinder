@@ -1,10 +1,10 @@
 <resources>
     <string name="app_name">Pathfinder</string>
     <string name="track_list_activity_name">Manage tracks</string>
-    <string name="action_tracks_list">Manage all tracks</string>
+    <string name="action_tracks_list">All tracks</string>
 
     <!--    Permissions    -->
-    <string name="permission_rationale_location">Access to the location service is required for creating your track records.</string>
+    <string name="permission_rationale_location">Access to the location service is required for creating your track records. Do you want to allow access to the location service?</string>
     <string name="location_permission_denied">This application requires location permission to enable the tracking functionality. Please try again and grant access to use the location.\nIf the permission has been permanently denied, it can be enabled from the System Settings.</string>
 
     <!--    Notification channels    -->
