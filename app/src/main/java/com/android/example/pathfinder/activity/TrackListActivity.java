@@ -55,8 +55,9 @@ public class TrackListActivity extends AppCompatActivity {
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                 if (!mTracksList.get(viewHolder.getAdapterPosition()).isInProgress()) {
                     deleteTrack((String) viewHolder.itemView.getTag());
+                } else {
+                    mTracksAdapter.notifyDataSetChanged();
                 }
-                mTracksAdapter.notifyDataSetChanged();
             }
         };
 

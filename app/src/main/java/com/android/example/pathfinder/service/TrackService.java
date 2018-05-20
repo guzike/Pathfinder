@@ -36,8 +36,8 @@ public class TrackService extends Service {
     public static final String ACTION_TOGGLE = "ACTION_TOGGLE";
     private static final String TAG = TrackService.class.getSimpleName();
     private static final int ONGOING_NOTIFICATION_ID = 111;
-    private static final int LOCATION_INTERVAL = 1000;
-    private static final float LOCATION_DISTANCE = 0f; // TODO: set it to 1 when the app is done
+    private static final int LOCATION_INTERVAL = 1000; // milliseconds
+    private static final float LOCATION_DISTANCE = 1f; // meters
     private static final String TRACK_DEFAULT_NAME = "Track name";
     private static final int TRACK_DEFAULT_COLOR = Color.BLACK;
     private String mTrackId = null;
