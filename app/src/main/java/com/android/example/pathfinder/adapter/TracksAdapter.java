@@ -14,6 +14,9 @@ import android.widget.TextView;
 import com.android.example.pathfinder.R;
 import com.android.example.pathfinder.db.TrackEntry;
 import com.android.example.pathfinder.fragment.TrackDialogFragment;
+import com.android.example.pathfinder.utils.DistanceUtil;
+import com.google.maps.android.PolyUtil;
+import com.google.maps.android.SphericalUtil;
 
 import java.util.List;
 
@@ -56,6 +59,9 @@ public class TracksAdapter extends RecyclerView.Adapter<TracksAdapter.TrackViewH
             holder.status.setVisibility(View.GONE);
         }
 
+        double distance = SphericalUtil.computeLength(PolyUtil.decode(track.getTrack()));
+        holder.distance.setText(DistanceUtil.formatDist(distance));
+
         holder.clickItem.setTag(track.getTrackId());
         holder.clickItem.setOnClickListener(v -> showDialog((String) v.getTag()));
     }
@@ -90,12 +96,14 @@ public class TracksAdapter extends RecyclerView.Adapter<TracksAdapter.TrackViewH
     public class TrackViewHolder extends RecyclerView.ViewHolder {
         public TextView name;
         public TextView status;
+        public TextView distance;
         public View clickItem;
 
         TrackViewHolder(View view) {
             super(view);
             name = view.findViewById(R.id.track_name);
             status = view.findViewById(R.id.track_status);
+            distance = view.findViewById(R.id.track_distance);
             clickItem = view.findViewById(R.id.click_item);
         }
     }
