@@ -46,9 +46,11 @@ public class TracksAdapter extends RecyclerView.Adapter<TracksAdapter.TrackViewH
         if (track.isInProgress()) {
             holder.status.setText(R.string.track_status_in_progress);
             holder.status.setVisibility(View.VISIBLE);
+            holder.status.setTextColor(track.getColor());
         } else if (track.isDisplayed()) {
             holder.status.setText(R.string.track_status_displayed);
             holder.status.setVisibility(View.VISIBLE);
+            holder.status.setTextColor(track.getColor());
         } else {
             holder.status.setText("");
             holder.status.setVisibility(View.GONE);
