@@ -16,11 +16,9 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
-import com.android.example.pathfinder.AppExecutors;
 import com.android.example.pathfinder.R;
 import com.android.example.pathfinder.activity.TrackViewModel;
 import com.android.example.pathfinder.activity.TrackViewModelFactory;
-import com.android.example.pathfinder.db.AppDatabase;
 import com.android.example.pathfinder.db.TrackEntry;
 
 public class TrackDialogFragment extends DialogFragment {
@@ -35,8 +33,8 @@ public class TrackDialogFragment extends DialogFragment {
     private static final String END_KEY = "END_KEY";
     private static final String DISPLAY_KEY = "DISPLAY_KEY";
 
+    private TrackViewModel mViewModel;
     private String mTrackId = "";
-    private AppDatabase mDb;
     private Context mContext;
     private Button mOkButton;
     private TextInputEditText mNameInput;
@@ -66,7 +64,6 @@ public class TrackDialogFragment extends DialogFragment {
         if (getArguments() != null) {
             mTrackId = getArguments().getString(KEY);
         }
-        mDb = AppDatabase.getInstance(mContext);
     }
 
     @Override
@@ -76,7 +73,10 @@ public class TrackDialogFragment extends DialogFragment {
 
         mOkButton = v.findViewById(R.id.ok_button);
         mOkButton.setOnClickListener(button -> {
-            updateTrackDetails();
+            mViewModel.updateTrackDetails(
+                    mNameInput.getText().toString(),
+                    Integer.valueOf(mColorInput.getText().toString()),
+                    mDisplayCheckbox.isChecked());
             TrackDialogFragment.this.dismiss();
         });
 
@@ -87,10 +87,10 @@ public class TrackDialogFragment extends DialogFragment {
         mDisplayCheckbox = v.findViewById(R.id.display);
 
         if (savedInstanceState == null) {
-            TrackViewModelFactory factory = new TrackViewModelFactory(mDb, mTrackId);
-            final TrackViewModel viewModel = ViewModelProviders.of(this, factory).get(TrackViewModel.class);
-            viewModel.getTrack().observe(this, track -> {
-                viewModel.getTrack().removeObservers(this);
+            TrackViewModelFactory factory = new TrackViewModelFactory(mContext.getApplicationContext(), mTrackId);
+            mViewModel = ViewModelProviders.of(this, factory).get(TrackViewModel.class);
+            mViewModel.getTrack().observe(this, track -> {
+                mViewModel.getTrack().removeObservers(this);
                 updateUi(track);
             });
         } else {
@@ -144,14 +144,4 @@ public class TrackDialogFragment extends DialogFragment {
         mDisplayCheckbox.setChecked(track.isDisplayed());
     }
 
-    /**
-     * Update information about the track in the database.
-     */
-    private void updateTrackDetails() {
-        AppExecutors.getInstance().diskIO().execute(() -> mDb.trackDao().updateTrackDetails(
-                mTrackId,
-                mNameInput.getText().toString(),
-                Integer.valueOf(mColorInput.getText().toString()),
-                mDisplayCheckbox.isChecked()));
-    }
 }
