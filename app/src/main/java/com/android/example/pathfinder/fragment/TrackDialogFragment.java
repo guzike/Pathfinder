@@ -16,11 +16,9 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
-import com.android.example.pathfinder.AppExecutors;
 import com.android.example.pathfinder.R;
 import com.android.example.pathfinder.activity.TrackViewModel;
 import com.android.example.pathfinder.activity.TrackViewModelFactory;
-import com.android.example.pathfinder.db.AppDatabase;
 import com.android.example.pathfinder.db.TrackEntry;
 
 public class TrackDialogFragment extends DialogFragment {
@@ -29,8 +27,14 @@ public class TrackDialogFragment extends DialogFragment {
 
     private static final String KEY = "trackId";
 
+    private static final String NAME_KEY = "NAME_KEY";
+    private static final String COLOR_KEY = "COLOR_KEY";
+    private static final String START_KEY = "START_KEY";
+    private static final String END_KEY = "END_KEY";
+    private static final String DISPLAY_KEY = "DISPLAY_KEY";
+
+    private TrackViewModel mViewModel;
     private String mTrackId = "";
-    private AppDatabase mDb;
     private Context mContext;
     private Button mOkButton;
     private TextInputEditText mNameInput;
@@ -41,7 +45,6 @@ public class TrackDialogFragment extends DialogFragment {
 
     public static TrackDialogFragment newInstance(String trackId) {
         TrackDialogFragment f = new TrackDialogFragment();
-        // Supply num input as an argument.
         Bundle args = new Bundle();
         args.putString(KEY, trackId);
         f.setArguments(args);
@@ -61,7 +64,6 @@ public class TrackDialogFragment extends DialogFragment {
         if (getArguments() != null) {
             mTrackId = getArguments().getString(KEY);
         }
-        mDb = AppDatabase.getInstance(mContext);
     }
 
     @Override
@@ -71,7 +73,10 @@ public class TrackDialogFragment extends DialogFragment {
 
         mOkButton = v.findViewById(R.id.ok_button);
         mOkButton.setOnClickListener(button -> {
-            updateTrackDetails();
+            mViewModel.updateTrackDetails(
+                    mNameInput.getText().toString(),
+                    Integer.valueOf(mColorInput.getText().toString()),
+                    mDisplayCheckbox.isChecked());
             TrackDialogFragment.this.dismiss();
         });
 
@@ -81,14 +86,45 @@ public class TrackDialogFragment extends DialogFragment {
         mEndDate = v.findViewById(R.id.end);
         mDisplayCheckbox = v.findViewById(R.id.display);
 
-        TrackViewModelFactory factory = new TrackViewModelFactory(mDb, mTrackId);
-        final TrackViewModel viewModel = ViewModelProviders.of(this, factory).get(TrackViewModel.class);
-        viewModel.getTrack().observe(this, track -> {
-            viewModel.getTrack().removeObservers(this);
-            updateUi(track);
-        });
+        if (savedInstanceState == null) {
+            TrackViewModelFactory factory = new TrackViewModelFactory(mContext.getApplicationContext(), mTrackId);
+            mViewModel = ViewModelProviders.of(this, factory).get(TrackViewModel.class);
+            mViewModel.getTrack().observe(this, track -> {
+                mViewModel.getTrack().removeObservers(this);
+                updateUi(track);
+            });
+        } else {
+            restoreUi(savedInstanceState);
+        }
 
         return v;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putString(NAME_KEY, mNameInput.getText().toString());
+        outState.putString(COLOR_KEY, mColorInput.getText().toString());
+        outState.putString(START_KEY, mStartDate.getText().toString());
+        outState.putString(END_KEY, mEndDate.getText().toString());
+        outState.putBoolean(DISPLAY_KEY, mDisplayCheckbox.isChecked());
+        super.onSaveInstanceState(outState);
+    }
+
+    /**
+     * Restore the UI from saved data.
+     *
+     * @param bundle the track data.
+     */
+    private void restoreUi(Bundle bundle) {
+        Log.d(TAG, "restore of Dialog");
+        if (bundle == null) {
+            return;
+        }
+        mNameInput.setText(bundle.getString(NAME_KEY));
+        mColorInput.setText(bundle.getString(COLOR_KEY));
+        mStartDate.setText(bundle.getString(START_KEY));
+        mEndDate.setText(bundle.getString(END_KEY));
+        mDisplayCheckbox.setChecked(bundle.getBoolean(DISPLAY_KEY));
     }
 
     /**
@@ -108,16 +144,4 @@ public class TrackDialogFragment extends DialogFragment {
         mDisplayCheckbox.setChecked(track.isDisplayed());
     }
 
-    /**
-     * Update information about the track in the database.
-     */
-    private void updateTrackDetails() {
-        AppExecutors.getInstance().diskIO().execute(() -> {
-            mDb.trackDao().updateTrackDetails(
-                    mTrackId,
-                    mNameInput.getText().toString(),
-                    Integer.valueOf(mColorInput.getText().toString()),
-                    mDisplayCheckbox.isChecked());
-        });
-    }
 }
